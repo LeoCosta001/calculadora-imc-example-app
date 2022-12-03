@@ -1,4 +1,5 @@
 import 'package:calculadora_imc/main.dart';
+import 'package:calculadora_imc/models/imc_model.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -9,6 +10,30 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  // Controllers
+  TextEditingController weightInputController = TextEditingController();
+  TextEditingController heightInputController = TextEditingController();
+  IMCCheck? _imcResult;
+
+  // Functions
+  void _resetFields() {
+    setState(() {
+      weightInputController.text = '';
+      heightInputController.text = '';
+      _imcResult = null;
+    });
+  }
+
+  void _calculate() {
+    double weight = double.parse(weightInputController.text);
+    double height = double.parse(heightInputController.text) / 100; // Transform centimeters to meters
+    double imc = weight / (height * height);
+
+    setState(() {
+      _imcResult = IMCCheck(imc);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +43,7 @@ class _HomeState extends State<Home> {
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
-            onPressed: () {},
+            onPressed: _resetFields,
           )
         ],
       ),
@@ -28,11 +53,12 @@ class _HomeState extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Icon(Icons.person, size: 120),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 16),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
               child: TextField(
+                controller: weightInputController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Peso (kg)',
                   border: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(
@@ -41,9 +67,10 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            const TextField(
+            TextField(
+              controller: heightInputController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Altura (cm)',
                 border: OutlineInputBorder(),
                 focusedBorder: OutlineInputBorder(
@@ -54,7 +81,7 @@ class _HomeState extends State<Home> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: _calculate,
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),
@@ -62,20 +89,27 @@ class _HomeState extends State<Home> {
               ),
             ),
             Column(
-              children: const [
-                Text(
-                  'Resultado:',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
+              children: [
+                if (_imcResult != null)
+                  const Opacity(
+                    opacity: 0.4,
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        'Resultado:',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
                 Text(
-                  '123 (Obeso)',
+                  _imcResult == null ? 'Informe seus dados...' : _imcResult!.resultMessage,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 24,
-                    color: Colors.red,
+                    color: _imcResult == null ? mainColor : _imcResult!.color,
                   ),
                 ),
               ],

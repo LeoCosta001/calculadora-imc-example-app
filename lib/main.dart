@@ -12,6 +12,6 @@ void main() {
       ),
       iconTheme: const IconThemeData(color: mainColor),
     ),
-    home: Home(),
+    home: const Home(),
   ));
 }
