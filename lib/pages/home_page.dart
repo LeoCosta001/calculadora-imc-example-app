@@ -15,7 +15,7 @@ class _HomeState extends State<Home> {
   TextEditingController heightInputController = TextEditingController();
   IMCCheck? _imcResult;
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>(); // Create form controller
 
   // Functions
   void _resetFields() {
